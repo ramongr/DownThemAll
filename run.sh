@@ -28,6 +28,7 @@ cd ../java
 git clone git@github.com:ramongr/colisoes.git
 git clone git@github.com:ramongr/concurrent-java.git
 git clone git@github.com:ramongr/colisoes-processing.git
+git clone git@bitbucket.org:ramongr/bannerscalc-java.git
 
 #Chrome plugins HERE
 

@@ -1,61 +1,29 @@
-#!/bin/bash
+# #!/bin/bash
 
-mkdir c cmd rails chrome js HTML java docs
-cd c
+#Check if file with token exists
+if [ -f token ]; then
+	gitToken=$(<token)
+	echo "Git token: $gitToken";
+else
 
-#C repos HERE
+	read -p "Insert Authorization token for Github: " gitToken;
+	echo $gitToken > token;
+fi
 
-git clone git@github.com:ramongr/beep_a_song_windows.git 
-git clone git@github.com:ramongr/ceaser_cipher.git
-git clone git@github.com:ramongr/roman_to_dec.git
+curl -H "Authorization: token $gitToken " https://api.github.com/user/repos | grep "\"language\": \"[a-zA-Z]*\"" > language
 
-cd ../cmd
+for OUTPUT in $(curl -H "Authorization: token $gitToken " https://api.github.com/user/repos | grep -o git@[a-zA-Z0-9:._\/]*)
+do
+	# ls --color
+	# read -p "Which folder should I save $OUTPUT? " complete -F folderName;
+		
+	# if [ -d $folderName ]; then
+	# 	cd $folderName
+	# else
+	# 	mkdir $folderName && cd $folderName
+	# fi
 
-git clone git@github.com:ramongr/xcowsay_name.git
+	echo "git clone $OUTPUT";
+	cd ..
 
-#Rails repos HERE
-
-cd ../rails
-
-git clone git@github.com:NelsonBrandao/biobrassica.git
-git clone git@github.com:SEMAG/mop.git
-git clone git@bitbucket.org:ogmalabs/ogmaclinica.git
-
-#Java respos HERE
-
-cd ../java
-
-git clone git@github.com:ramongr/colisoes.git
-git clone git@github.com:ramongr/concurrent-java.git
-git clone git@github.com:ramongr/colisoes-processing.git
-git clone git@bitbucket.org:ramongr/bannerscalc-java.git
-
-#Chrome plugins HERE
-
-cd ../chrome
-
-git clone git@github.com:ramongr/facebook-extras.git
-
-#JS end-to-en HERE
-
-cd ../js
-
-git clone git@bitbucket.org:ogmalabs/8bitdeals.git
-
-#OgmaLabs documentation HERE
-
-cd ../docs
-
-git clone git@bitbucket.org:ogmalabs/company.git
-
-#HTML websites HERE
-
-cd ../HTML
-
-git clone git@bitbucket.org:ogmalabs/official-website.git
-git clone git@bitbucket.org:ramongr/teste-de-turing.git
-git clone git@bitbucket.org:ramongr/bannerscalc.git
-
-clear
-
-echo 'Done!'
+done

@@ -1,61 +1,56 @@
-#!/bin/bash
+# #!/bin/bash
+[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
 
-mkdir c cmd rails chrome js HTML java docs
-cd c
+#Regular expression
+regex="[a-zA-Z]*";
 
-#C repos HERE
+#Check if file with token exists
+if [ -f token ]; then
+  gitToken=$(<gitHubToken)
+  echo "Git token: $gitToken";
+else
 
-git clone git@github.com:ramongr/beep_a_song_windows.git 
-git clone git@github.com:ramongr/ceaser_cipher.git
-git clone git@github.com:ramongr/roman_to_dec.git
+  read -p "Insert Authorization token for Github: " gitToken;
+  echo $gitToken > token;
+fi
 
-cd ../cmd
+for OUTPUT in $(curl -H "Authorization: token $gitToken " https://api.github.com/user/repos | grep -o git@[a-zA-Z0-9:._\/]*)
+do
 
-git clone git@github.com:ramongr/xcowsay_name.git
+  #Check if there exists a repo config file
+  if [ -f repoConfig ]; then
+    folderName=$(grep "$regex $OUTPUT" repoConfig)
+    folderName=$(echo $folderName | grep -E -o "^[a-z]+")
+    
+    #Check if repo has a folder assigned
+    if [ -z $folderName ]; then
 
-#Rails repos HERE
+      echo "Which folder should I save $OUTPUT?"
+      read folderName
+      #Save option
+      echo "$folderName $OUTPUT" >> repoConfig
+    fi
 
-cd ../rails
+    #Check if folder already exists
+    if [ -d $folderName ]; then
 
-git clone git@github.com:NelsonBrandao/biobrassica.git
-git clone git@github.com:SEMAG/mop.git
-git clone git@bitbucket.org:ogmalabs/ogmaclinica.git
+      cd $folderName
+      echo "git clone $OUTPUT"
+    else
 
-#Java respos HERE
+      mkdir -m 777 $folderName && cd $folderName
+      echo "git clone $OUTPUT"
 
-cd ../java
+    fi
+    cd ..
+  else
 
-git clone git@github.com:ramongr/colisoes.git
-git clone git@github.com:ramongr/concurrent-java.git
-git clone git@github.com:ramongr/colisoes-processing.git
-git clone git@bitbucket.org:ramongr/bannerscalc-java.git
-
-#Chrome plugins HERE
-
-cd ../chrome
-
-git clone git@github.com:ramongr/facebook-extras.git
-
-#JS end-to-en HERE
-
-cd ../js
-
-git clone git@bitbucket.org:ogmalabs/8bitdeals.git
-
-#OgmaLabs documentation HERE
-
-cd ../docs
-
-git clone git@bitbucket.org:ogmalabs/company.git
-
-#HTML websites HERE
-
-cd ../HTML
-
-git clone git@bitbucket.org:ogmalabs/official-website.git
-git clone git@bitbucket.org:ramongr/teste-de-turing.git
-git clone git@bitbucket.org:ramongr/bannerscalc.git
-
-clear
-
-echo 'Done!'
+    echo "Which folder should I save $OUTPUT?"
+    read folderName
+    #Save option
+    echo "$folderName $OUTPUT" >> repoConfig
+    mkdir -m 777 $folderName && cd $folderName
+    echo "git clone $OUTPUT"
+    cd ..
+  fi
+done

@@ -5,16 +5,16 @@
 regex="[a-zA-Z]*";
 
 #Check if file with token exists
-if [ -f token ]; then
+if [ -f gitHubToken ]; then
   gitToken=$(<gitHubToken)
   echo "Git token: $gitToken";
 else
 
   read -p "Insert Authorization token for Github: " gitToken;
-  echo $gitToken > token;
+  echo $gitToken > gitHubToken
 fi
 
-for OUTPUT in $(curl -H "Authorization: token $gitToken " https://api.github.com/user/repos | grep -o git@[a-zA-Z0-9:._\/]*)
+for OUTPUT in $(curl -H "Authorization: token $gitToken " https://api.github.com/user/repos | grep -o git@[a-zA-Z0-9:._\/-]*)
 do
 
   #Check if there exists a repo config file
